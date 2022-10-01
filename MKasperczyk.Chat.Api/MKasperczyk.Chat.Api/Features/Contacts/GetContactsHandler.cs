@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
-using MKasperczyk.Chat.Api.Repositories;
+﻿using MKasperczyk.Chat.Api.Repositories;
 
 namespace MKasperczyk.Chat.Api.Features.Contacts
 {
@@ -12,19 +8,17 @@ namespace MKasperczyk.Chat.Api.Features.Contacts
         {
             var users = await unitOfWork.UserRepository.GetUsersWithConnectionAsync();
             var contacts = users
-                .Where(u => u.Id != userId)
-                .Select(u =>
+                .Where(user => user.Id != userId)
+                .Select(user =>
                 {
-                    var connection = u?.Connections?.OrderByDescending(c => c.ConnectionAt)?.FirstOrDefault();
+                    var connection = user?.Connections?.OrderByDescending(c => c.ConnectionAt)?.FirstOrDefault();
 
-                    return new UserInfo()
-                    {
-                        Id = u.Id,
-                        UserName = u.Username,
-                        LastConnection = connection?.ConnectionAt,
-                        CurrentlyLogin = connection != null ? connection.Connected : false,
-                        Avatar = u.Avatar
-                    };
+                    return new GetContactsResponse(
+                        user.Id,
+                        user.Username,
+                        connection?.ConnectionAt,
+                        connection != null ? connection.Connected : false,
+                        user.Avatar);
                 })
                 .ToList();
 

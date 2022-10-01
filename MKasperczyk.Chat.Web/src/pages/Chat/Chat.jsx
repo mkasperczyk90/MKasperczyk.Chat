@@ -1,36 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HubConnectionBuilder } from "@microsoft/signalr";
 import "./Chat.css";
 import axios from "axios";
-import {
-  sendMessageUrl,
-  messagesUrl,
-  chatHubUrl,
-} from "../../helpers/ApiRequests";
+import { sendMessageUrl, messagesUrl } from "../../helpers/ApiRequests";
 import ChatSendingBox from "../../components/Chat/ChatSendingBox";
 import ChatMessage from "../../components/Chat/ChatMessage";
 import ChatMessageInfo from "../../components/Chat/ChatMessageInfo";
 import ChatContact from "../../components/Chat/ChatContact";
 import ChatHeader from "../../components/Chat/ChatHeader";
 import { useAuthContext } from "../../providers/AuthProvider";
+import { useSignalRContext } from "../../providers/SignalRProvider";
 
 export default function Chat() {
   const chatLocalStorageKey = "chat";
-  const navigate = useNavigate();
-  const [connection, setConnection] = useState(null);
   const auth = useAuthContext();
+  const connection = useSignalRContext();
+
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [currentChat, setCurrentChat] = React.useState(undefined);
-
-  useEffect(() => {
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(chatHubUrl, { accessTokenFactory: () => auth.user.token })
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(newConnection);
-  }, [auth.user]);
 
   useEffect(() => {
     const setData = async () => {
@@ -47,26 +35,21 @@ export default function Chat() {
   }, [auth, navigate]);
 
   useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          connection.on("ReceiveMessage", (messageData) => {
-            var actualChatChannel = getStorageValue(chatLocalStorageKey);
+    if (connection != null) {
+      connection.on("ReceiveMessage", (messageData) => {
+        var actualChatChannel = getStorageValue(chatLocalStorageKey);
 
-            if (actualChatChannel.id === messageData.sender) {
-              setMessages((prvMessages) => [
-                ...prvMessages,
-                {
-                  type: "recieved",
-                  sendAt: new Date(),
-                  message: messageData.message,
-                },
-              ]);
-            }
-          });
-        })
-        .catch((e) => console.log("Connection failed: ", e));
+        if (actualChatChannel.id === messageData.sender) {
+          setMessages((prvMessages) => [
+            ...prvMessages,
+            {
+              type: "recieved",
+              sendAt: new Date(),
+              message: messageData.message,
+            },
+          ]);
+        }
+      });
     }
   }, [connection]);
 
@@ -121,7 +104,7 @@ export default function Chat() {
     <div className="card chat-app">
       <ChatHeader />
       <ChatContact changeChat={changeChat} connection={connection} />
-      {(currentChat && Object.keys(currentChat).length > 0) ? (
+      {currentChat && Object.keys(currentChat).length > 0 ? (
         <div className="chat">
           <ChatMessageInfo currentChat={currentChat} />
           <ChatMessage

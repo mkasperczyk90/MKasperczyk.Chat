@@ -9,7 +9,6 @@ using MKasperczyk.Chat.Api.Features.Auth;
 using MKasperczyk.Chat.Api.Features.Contacts;
 using MKasperczyk.Chat.Api.Features.Messages;
 using MKasperczyk.Chat.Api.Hubs;
-using MKasperczyk.Chat.Api.Models;
 using MKasperczyk.Chat.Api.Repositories;
 using MKasperczyk.Chat.Api.Services;
 using MKasperczyk.Chat.Api.Validators;
@@ -17,11 +16,11 @@ using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-var corsAllowOrgins = "_chatCorsAllowOrgins";
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+var corsAllowOrgins = "_chatCorsAllowOrgins";
 services.AddCors(options =>
 {
     options.AddPolicy(name: corsAllowOrgins,
@@ -37,58 +36,17 @@ services.AddCors(options =>
 });
 
 // SERVICE
-services.AddSignalR();
-services.AddTransient<IUserRepository, UserRepository>();
-services.AddTransient<IUnitOfWork, UnitOfWork>();
-services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
-services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
-services.AddScoped<IValidator<SendMessageRequest>, SendMessageRequestValidator>(); 
 services.AddScoped<IAuthService, AuthService>(); 
-services.AddDbContextFactory<ChatContext>(options => options.UseNpgsql(configuration.GetConnectionString("ChatDatabase")));
+services.RegisterDatabase(configuration);
+services.RegisterRequests();
 
-//https://www.youtube.com/watch?v=oti4dU8Pv14
-// AUTH
-services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
-    options.Events = new JwtBearerEvents
-    {
-        // https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-6.0
-        OnMessageReceived = context =>
-        {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) &&
-                (path.StartsWithSegments("/hubs/chat")))
-            {
-                // Read the token out of the query string
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        }
-    };
-});
-services.AddAuthorization();
+services.AddSignalR();
+services.AddChatAuth(configuration);
 
 var app = builder.Build();
-//app.MapSockets()
-
 
 app.UseCors(corsAllowOrgins);
+
 if (app.Environment.IsDevelopment())
 {
     // DB Initializer
@@ -112,4 +70,4 @@ app.MapPost("/message", SendMessageHandler.Handle).RequireAuthorization();
 app.MapPost("/auth/register", RegisterHandler.Handle);
 app.MapPost("/auth/token", MKasperczyk.Chat.Api.Features.Auth.SecurityTokenHandler.Handle).AllowAnonymous();
 
-app.Run();
+app.Run(configuration["RunningAddress"]);

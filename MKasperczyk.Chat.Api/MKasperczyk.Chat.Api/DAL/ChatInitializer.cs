@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MKasperczyk.Chat.Api.Models;
 
 namespace MKasperczyk.Chat.Api.DAL
 {
@@ -8,7 +7,6 @@ namespace MKasperczyk.Chat.Api.DAL
     {
         public async static Task Seed(ChatContext context)
         {
-            //context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
             var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Username == "Geek0n");

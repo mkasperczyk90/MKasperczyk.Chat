@@ -8,30 +8,26 @@ namespace MKasperczyk.Chat.Api.Repositories
     public class ConnectionRepository : IConnectionRepository
     {
         private ChatContext _context;
-        public ConnectionRepository(ChatContext chatContext)
-        {
-            _context = chatContext;
-        }
+        public ConnectionRepository(ChatContext chatContext) => _context = chatContext;
 
-        public async Task<UserConnection?> GetConnection(int userId)
-        {
-            return await _context.Connections.FirstOrDefaultAsync(con => 
+        public async Task<UserConnection?> GetConnection(int userId) => 
+            await _context.Connections.FirstOrDefaultAsync(con => 
                 con.ConnectedUserId == userId &&
                 con.Connected == true);
-        }
 
-        public async Task AddConnection(int userId,string connectionId, string userAgent)
+        public async Task AddConnection(int userId,string connectionId, string? userAgent)
         {
             await _context.Connections.AddAsync(new UserConnection
             {
                 ConnectionID = connectionId,
                 ConnectedUserId = userId,
                 ConnectionAt = DateTime.UtcNow, // TODO: datetimeprovider
-                UserAgent = userAgent,
+                UserAgent = userAgent ?? String.Empty,
                 Connected = true
             });
             _context.SaveChanges();
         }
+
         public void Disconnect(int userId)
         {
             var connections = _context.Connections.Where(con =>

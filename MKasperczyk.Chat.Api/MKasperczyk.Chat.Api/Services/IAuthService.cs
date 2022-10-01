@@ -1,11 +1,11 @@
-﻿using MKasperczyk.Chat.Api.Models;
+﻿using MKasperczyk.Chat.Api.Features.Auth;
 using System.ComponentModel;
 
 namespace MKasperczyk.Chat.Api.Services
 {
     public interface IAuthService
     {
-        bool VerifyPassword(TokenRequest tokenRequest, string passwordFromDb);
+        bool VerifyPassword(SecurityTokenRequest tokenRequest, string? passwordFromDb);
         string GetToken(int idUser, string userName);
     }
 }

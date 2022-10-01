@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using MKasperczyk.Chat.Api.Models;
+using MKasperczyk.Chat.Api.Features.Auth;
 
 namespace MKasperczyk.Chat.Api.Validators
 {

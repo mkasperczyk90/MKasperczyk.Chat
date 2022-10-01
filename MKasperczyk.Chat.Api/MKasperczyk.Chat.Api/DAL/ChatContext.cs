@@ -13,7 +13,6 @@ namespace MKasperczyk.Chat.Api.DAL
         public DbSet<ChanelRecipients> ChanelUsers => Set<ChanelRecipients>();
         public DbSet<UserConnection> Connections => Set<UserConnection>();
 
-
         public ChatContext(DbContextOptions<ChatContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

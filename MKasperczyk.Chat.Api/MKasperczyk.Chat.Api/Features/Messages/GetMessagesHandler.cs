@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
 
 namespace MKasperczyk.Chat.Api.Features.Messages
 {
@@ -36,13 +35,11 @@ namespace MKasperczyk.Chat.Api.Features.Messages
 
         public static GetMessagesResponse GetResponseForMessage(Message message, int senderId)
         {
-            return new GetMessagesResponse()
-            {
-                MessageId = message.Id,
-                Message = message.Content,
-                Type = message.SenderId == senderId ? "sended" : "recieved",
-                SendAt = message.SendAt
-            };
+            return new GetMessagesResponse(
+                message.Id,
+                message.Content,
+                message.SendAt,
+                message.SenderId == senderId ? "sended" : "recieved");
         }
     }
 }

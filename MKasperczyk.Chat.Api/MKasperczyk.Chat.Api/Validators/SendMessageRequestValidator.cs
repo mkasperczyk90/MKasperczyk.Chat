@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using MKasperczyk.Chat.Api.Models;
+using MKasperczyk.Chat.Api.Features.Messages;
 
 namespace MKasperczyk.Chat.Api.Validators
 {

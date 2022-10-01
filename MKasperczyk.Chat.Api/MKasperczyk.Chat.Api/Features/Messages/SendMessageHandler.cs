@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
 using MKasperczyk.Chat.Api.Repositories;
 
 namespace MKasperczyk.Chat.Api.Features.Messages

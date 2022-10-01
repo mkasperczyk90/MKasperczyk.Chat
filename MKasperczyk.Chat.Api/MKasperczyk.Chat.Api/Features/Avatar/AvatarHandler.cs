@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
-using MKasperczyk.Chat.Api.Repositories;
-using System.IO.Compression;
+﻿using MKasperczyk.Chat.Api.Repositories;
 
 namespace MKasperczyk.Chat.Api.Features.Contacts
 {
@@ -12,6 +7,11 @@ namespace MKasperczyk.Chat.Api.Features.Contacts
         public async static Task<IResult> Handle(IUnitOfWork unitOfWork, HttpRequest request)
         {
             int? id = GetUserId(request.HttpContext);
+
+            if(id == null)
+            {
+                return Results.Unauthorized();
+            }
 
             using (var memoryStream = new MemoryStream())
             {

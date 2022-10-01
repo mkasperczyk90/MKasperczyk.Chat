@@ -38,12 +38,12 @@ namespace MKasperczyk.Chat.Api.Hubs
         {
             int? id = GetUserId();
             
-            if(id.HasValue)
+            if(id.HasValue && Context != null)
             {
-                _unitOfWork.ConnectionRepository.AddConnection(
+                await _unitOfWork.ConnectionRepository.AddConnection(
                     id.Value,
-                    Context?.ConnectionId,
-                    Context?.GetHttpContext()?.Request?.Headers["User-Agent"]);
+                    Context.ConnectionId,
+                    Context.GetHttpContext()?.Request?.Headers["User-Agent"]);
 
                 await Clients.AllExcept(Context.ConnectionId).SendAsync("statusChanged", new // TODO: do not use anonymous obj
                 {

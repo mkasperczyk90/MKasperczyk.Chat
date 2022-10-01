@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.IdentityModel.Tokens;
 using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
 using MKasperczyk.Chat.Api.Services;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,7 +14,7 @@ namespace MKasperczyk.Chat.Api.Features.Auth
 {
     public class SecurityTokenHandler
     {
-        public async static Task<IResult> Handle(IDbContextFactory<ChatContext> dbContextFactory, IAuthService authService, IValidator<TokenRequest> validator, TokenRequest tokenRequest)
+        public async static Task<IResult> Handle(IDbContextFactory<ChatContext> dbContextFactory, IAuthService authService, IValidator<SecurityTokenRequest> validator, SecurityTokenRequest tokenRequest)
         {
             var validationResult = validator.Validate(tokenRequest);
             if (!validationResult.IsValid)

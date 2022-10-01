@@ -7,17 +7,12 @@ namespace MKasperczyk.Chat.Api.Repositories
     public class MessageRepository : IMessageRepository
     {
         private ChatContext _context;
-        public MessageRepository(ChatContext chatContext)
-        {
-            _context = chatContext;
-        }
 
-        public async Task<IEnumerable<User>> GetUsersAsync()
-        {
-            return await _context.Users.ToListAsync();
-        }
-        public async Task AddMessageAsync(string message, int chanelId, int senderId)
-        {
+        public MessageRepository(ChatContext chatContext) => _context = chatContext;
+
+        public async Task<IEnumerable<User>> GetUsersAsync() => await _context.Users.ToListAsync();
+
+        public async Task AddMessageAsync(string message, int chanelId, int senderId) =>
             await _context.Messages.AddAsync(new Message
             {
                 Content = message,
@@ -25,7 +20,6 @@ namespace MKasperczyk.Chat.Api.Repositories
                 ChanelId = chanelId,
                 SendAt = DateTime.UtcNow
             });
-        }
 
         public async Task<ChatChanel?> GetOrCreateChanelWithRecipientsAsync(IEnumerable<int> recipientIds)
         {

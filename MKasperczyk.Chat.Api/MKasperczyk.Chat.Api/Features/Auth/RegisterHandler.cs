@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using MKasperczyk.Chat.Api.DAL;
-using MKasperczyk.Chat.Api.Models;
 using MKasperczyk.Chat.Api.Repositories;
 using MKasperczyk.Chat.Api.Services;
 using Newtonsoft.Json.Linq;
@@ -37,15 +36,22 @@ namespace MKasperczyk.Chat.Api.Features.Auth
             await unitOfWork.UserRepository.AddUserAsync(registerInfo.UserName, hashedPassword);
             unitOfWork.Save();
 
-            user = await unitOfWork.UserRepository.GetUserAsync(registerInfo.UserName);
-            string token = authService.GetToken(user.Id, registerInfo.UserName);
+            var newUser = await unitOfWork.UserRepository.GetUserAsync(registerInfo.UserName);
+            if (newUser == null)
+            {
+                return Results.Json(new
+                {
+                    message = "Problem with saving user.",
+                    success = false
+                });
+            }
+            string token = authService.GetToken(newUser.Id, registerInfo.UserName);
             return Results.Json(new
             {
-                Id = user.Id,
+                Id = newUser.Id,
                 Token = token,
-                User = user.Username,
+                User = newUser.Username,
                 Success = true,
-                Avatar = user.Avatar
             });
         }
     }

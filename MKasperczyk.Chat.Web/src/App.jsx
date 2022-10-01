@@ -11,14 +11,17 @@ import {
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./providers/AuthProvider";
+import { useAuthContext } from "./providers/AuthProvider";
+import { SignalRProvider } from "./providers/SignalRProvider";
+
 
 library.add(faPaperPlane, faSearch, faCircle);
 
 function App() {
+  const auth = useAuthContext();
   return (
     <div className="App container">
-      <AuthProvider>
+      <SignalRProvider user={auth.user}>
         <Routes>
           <Route path="/avatar" element={<Avatar />} />
           <Route path="/login" element={<Login />} />
@@ -26,7 +29,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Chat />} />
         </Routes>
-      </AuthProvider>
+      </SignalRProvider>
     </div>
   );
 }

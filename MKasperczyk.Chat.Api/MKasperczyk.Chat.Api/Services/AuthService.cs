@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using MKasperczyk.Chat.Api.Models;
+using MKasperczyk.Chat.Api.Features.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,7 +14,7 @@ namespace MKasperczyk.Chat.Api.Services
         {
             _configuration = configuration;
         }
-        public bool VerifyPassword(TokenRequest tokenRequest, string passwordFromDb)
+        public bool VerifyPassword(SecurityTokenRequest tokenRequest, string? passwordFromDb)
         {
             PasswordHasher<string> passwordHasher = new PasswordHasher<string>();
             var passwordVerification = passwordHasher.VerifyHashedPassword(tokenRequest.UserName, passwordFromDb, tokenRequest.Password);
