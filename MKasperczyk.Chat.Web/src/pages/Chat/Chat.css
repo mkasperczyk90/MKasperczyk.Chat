@@ -1,0 +1,18 @@
+.chat {
+  min-height: 300px;
+}
+
+.chat--empty {
+  text-align: center;
+  padding-top: 100px;
+}
+.chat-app .chat {
+  margin-left: 280px;
+  border-left: 1px solid #eaeaea;
+}
+
+@media only screen and (max-width: 768px)  {
+    .chat-app .chat {
+        margin-left: 0px;
+    }
+  }

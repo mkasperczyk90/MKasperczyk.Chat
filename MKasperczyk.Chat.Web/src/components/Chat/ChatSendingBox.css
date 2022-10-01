@@ -1,0 +1,8 @@
+.chat .chat-sending-box {
+  padding: 20px;
+}
+
+.chat-sending-box--icon {
+  padding: 0.505rem 0.75rem;
+  cursor: pointer;
+}

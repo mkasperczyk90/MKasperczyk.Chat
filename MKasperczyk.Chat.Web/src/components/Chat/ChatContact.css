@@ -1,0 +1,79 @@
+.chat-contact {
+  width: 280px;
+  position: absolute;
+  left: 0;
+  top: 75px;
+  padding: 20px;
+}
+
+.chat-contact--icon {
+  padding: 0.505rem 0.75rem;
+}
+
+.chat-contact--element {
+  padding: 10px 15px;
+  list-style: none;
+  border-radius: 5px;
+}
+
+.chat-contact--element:hover {
+  background: #efefef;
+  cursor: pointer;
+}
+
+.chat-contact--element.active {
+  background: #efefef;
+}
+
+.chat-contact--name {
+  font-size: 15px;
+}
+
+.chat-contact--image {
+  width: 45px;
+  border-radius: 50%;
+  float: left;
+}
+
+.chat-contact--about {
+  float: left;
+  padding-left: 8px;
+}
+
+.chat-contact--status {
+  color: #999;
+  font-size: 13px;
+}
+
+.chat-contact--list {
+  height: 450px;
+  overflow-y: auto;
+}
+
+.chat-contact--status.online .fa-circle {
+  color: green;
+}
+
+.chat-contact--status.offline .fa-circle {
+  color: red;
+}
+
+.chat-contact--status .fa-circle {
+  width: 7px;
+}
+
+@media only screen and (max-width: 768px)  {
+  .chat-contact {
+    top: 0px;
+    position: relative;
+    width: 100%;
+  }
+
+  .chat-contact--list {
+    height: 180px;
+  }
+
+  .other-message:after {
+    left: 70%;
+  }
+}

@@ -1,0 +1,15 @@
+.form-group {
+    margin-bottom:20px;
+}
+
+.register {
+    padding-top:30px;
+    padding-bottom:30px;
+    max-width: 300px;
+}
+
+.login {
+    padding-top:30px;
+    padding-bottom:30px;
+    max-width: 300px;
+}

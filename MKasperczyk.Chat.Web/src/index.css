@@ -1,0 +1,33 @@
+
+body{
+  background-color: #def0d3;
+  margin-top:35px;
+}
+.card {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
+}
+
+.me {
+  color: #1d8ecd
+}
+
+.float-right {
+  float: right
+}
+
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0
+}
+
+@media only screen and (max-width: 767px) {
+  .chat-app .chat {
+      margin: 0
+  }
+}
