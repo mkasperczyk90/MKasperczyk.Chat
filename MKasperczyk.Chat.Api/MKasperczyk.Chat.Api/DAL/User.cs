@@ -8,9 +8,9 @@ namespace MKasperczyk.Chat.Api.DAL
     {
         [Key]
         public int Id { get; set; }
-        public string? Username { get; set; }
-        public string? Password { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
         public byte[]? Avatar { get; set; }
-        public ICollection<UserConnection> Connections { get; set; }
+        public ICollection<UserConnection>? Connections { get; set; }
     }
 }

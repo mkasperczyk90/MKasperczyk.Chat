@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNet.SignalR.Messaging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using MKasperczyk.Chat.Api.DAL;
 using MKasperczyk.Chat.Api.Repositories;
-using System.Linq;
-using System.Text;
 
 namespace MKasperczyk.Chat.Api.Hubs
 {

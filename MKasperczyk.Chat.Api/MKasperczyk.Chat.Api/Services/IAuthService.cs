@@ -1,5 +1,4 @@
 ﻿using MKasperczyk.Chat.Api.Features.Auth;
-using System.ComponentModel;
 
 namespace MKasperczyk.Chat.Api.Services
 {

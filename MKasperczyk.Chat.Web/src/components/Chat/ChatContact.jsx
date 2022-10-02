@@ -3,58 +3,18 @@ import "./ChatContact.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { formatDistanceToNow } from "date-fns";
 import { useAuthContext } from "../../providers/AuthProvider";
-import axios from "axios";
-import { usersUrl } from "../../helpers/ApiRequests";
+import { useSearchableContacts } from "../../hooks/UseSearchableContacts"
 
 export default function ChatContact({ changeChat, connection }) {
   const auth = useAuthContext();
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [contacts, setContacts] = React.useState([]);
-  const [contactResult, setContactResult] = React.useState([]);
+  const searchableResult = useSearchableContacts(connection);
 
   useEffect(() => {
-    const setData = async () => {
-      if (auth.user) {
-        const data = await axios.get(`${usersUrl}/${auth.user.id}`);
-        setContacts(data.data);
-      }
-    };
-    setData();
-  }, [auth.user]);
-
-  //https://www.npmjs.com/package/react-signalr
-  useEffect(() => {
-    if (connection !== null) {
-      connection.on("statusChanged", (data) => {
-        setContactResult((previousContacts) =>
-          previousContacts.map((contact) =>
-            contact.id === data.user
-              ? {
-                  ...contact,
-                  currentlyLogin: data.online,
-                  lastConnection: data.when,
-                }
-              : contact
-          )
-        );
-      });
-    }
-  }, [connection]);
-
-  useEffect(() => {
-    var contactToDisplay = [];
-    if (searchQuery === "") contactToDisplay = contacts;
-    else {
-      contactToDisplay = contacts.filter((contact) =>
-        contact.userName.includes(searchQuery)
-      );
-    }
-
-    setContactResult(contactToDisplay);
-  }, [contacts, searchQuery]);
+    searchableResult.setUserId(auth.user.id)
+  }, [searchableResult, auth.user.id]);
 
   const handleChange = (event) => {
-    setSearchQuery(event.target.value);
+    searchableResult.setSearchQuery(event.target.value);
   };
 
   const changeCurrentChat = (contact) => {
@@ -69,7 +29,7 @@ export default function ChatContact({ changeChat, connection }) {
     }
   };
 
-  const contactsElement = contactResult.map((contact) => {
+  const contactsElement = searchableResult.dataResult.map((contact) => {
     return (
       <li
         key={contact.id}
@@ -113,7 +73,7 @@ export default function ChatContact({ changeChat, connection }) {
           type="text"
           className="chat-contact--input form-control"
           placeholder="Search..."
-          value={searchQuery}
+          value={searchableResult.searchQuery}
           onChange={handleChange}
         />
       </div>

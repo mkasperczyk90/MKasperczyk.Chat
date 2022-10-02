@@ -7,7 +7,7 @@ namespace MKasperczyk.Chat.Api.DAL
         [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
-        public IList<Message> Messages { get; set; }
-        public IList<ChanelRecipients> Recipients { get; set; }
+        public IList<Message>? Messages { get; set; }
+        public IList<ChanelRecipients>? Recipients { get; set; }
     }
 }

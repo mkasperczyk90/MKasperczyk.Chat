@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MKasperczyk.Chat.Api.DAL;
-using System.Linq;
-using System.Threading.Channels;
 
 namespace MKasperczyk.Chat.Api.Repositories
 {

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Chat.css";
-import axios from "axios";
-import { sendMessageUrl, messagesUrl } from "../../helpers/ApiRequests";
 import ChatSendingBox from "../../components/Chat/ChatSendingBox";
 import ChatMessage from "../../components/Chat/ChatMessage";
 import ChatMessageInfo from "../../components/Chat/ChatMessageInfo";
@@ -10,111 +8,48 @@ import ChatContact from "../../components/Chat/ChatContact";
 import ChatHeader from "../../components/Chat/ChatHeader";
 import { useAuthContext } from "../../providers/AuthProvider";
 import { useSignalRContext } from "../../providers/SignalRProvider";
+import { useChatMessage } from "../../hooks/UseChatMessage"
 
 export default function Chat() {
-  const chatLocalStorageKey = "chat";
   const auth = useAuthContext();
   const connection = useSignalRContext();
-
+  const chatMessage = useChatMessage(connection);
   const navigate = useNavigate();
-  const [messages, setMessages] = useState([]);
-  const [currentChat, setCurrentChat] = React.useState(undefined);
 
   useEffect(() => {
     const setData = async () => {
       if (!auth.user) {
         navigate("/login");
       } else {
-        var actualChatChannel = getStorageValue(chatLocalStorageKey);
-        if (actualChatChannel != null) {
-          changeChat(actualChatChannel);
-        }
+        chatMessage.setUserId(auth.user.id)
       }
     };
     setData();
-  }, [auth, navigate]);
-
-  useEffect(() => {
-    if (connection != null) {
-      connection.on("ReceiveMessage", (messageData) => {
-        var actualChatChannel = getStorageValue(chatLocalStorageKey);
-
-        if (actualChatChannel.id === messageData.sender) {
-          setMessages((prvMessages) => [
-            ...prvMessages,
-            {
-              type: "recieved",
-              sendAt: new Date(),
-              message: messageData.message,
-            },
-          ]);
-        }
-      });
-    }
-  }, [connection]);
-
-  useEffect(() => {
-    const getMessagesFromApi = async () => {
-      var user = auth.user;
-      const response = await axios.get(messagesUrl, {
-        params: {
-          senderId: user.id,
-          receiverId: currentChat.id,
-        },
-      });
-      setMessages(response.data);
-    };
-
-    if (currentChat !== undefined) {
-      getMessagesFromApi();
-    }
-  }, [currentChat, auth.user]);
+  }, [chatMessage, auth, navigate]);
 
   const changeChat = async (chat) => {
-    localStorage.setItem(chatLocalStorageKey, JSON.stringify(chat));
-    setCurrentChat(chat);
-  };
-
-  const getStorageValue = (key) => {
-    const saved = localStorage.getItem(key);
-    const initial = JSON.parse(saved);
-    return initial;
+    chatMessage.setCurrentChat(chat)
   };
 
   const handleSendMessage = async (msg) => {
-    await axios.post(sendMessageUrl, {
-      Sender: auth.user.id,
-      Message: msg,
-      Recipients: [currentChat.id],
-    });
-
-    await connection.send("SendMessage", currentChat.id, msg);
-
-    setMessages((prvMessages) => [
-      ...prvMessages,
-      {
-        type: "sended",
-        sendAt: new Date(),
-        message: msg,
-      },
-    ]);
+    chatMessage.sendMessage(msg)
   };
 
   return (
     <div className="card chat-app">
       <ChatHeader />
       <ChatContact changeChat={changeChat} connection={connection} />
-      {currentChat && Object.keys(currentChat).length > 0 ? (
+      {chatMessage.currentChat && Object.keys(chatMessage.currentChat).length > 0 ? (
         <div className="chat">
-          <ChatMessageInfo currentChat={currentChat} />
+          <ChatMessageInfo currentChat={chatMessage.currentChat} />
           <ChatMessage
-            currentChat={currentChat}
+            currentChat={chatMessage.currentChat}
             user={auth.user}
-            messages={messages}
+            messages={chatMessage.messages}
           />
           <ChatSendingBox
             handleSendMessage={handleSendMessage}
-            currentChat={currentChat}
+            currentChat={chatMessage.currentChat}
             user={auth.user}
           />
         </div>

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using MKasperczyk.Chat.Api.DAL;
 using MKasperczyk.Chat.Api.Repositories;
 

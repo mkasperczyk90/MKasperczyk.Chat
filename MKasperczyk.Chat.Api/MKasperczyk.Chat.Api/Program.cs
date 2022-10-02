@@ -1,8 +1,5 @@
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.WebSockets;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using MKasperczyk.Chat.Api.DAL;
 using MKasperczyk.Chat.Api.Extensions;
 using MKasperczyk.Chat.Api.Features.Auth;
@@ -11,10 +8,6 @@ using MKasperczyk.Chat.Api.Features.Messages;
 using MKasperczyk.Chat.Api.Hubs;
 using MKasperczyk.Chat.Api.Repositories;
 using MKasperczyk.Chat.Api.Services;
-using MKasperczyk.Chat.Api.Validators;
-using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -30,7 +23,7 @@ services.AddCors(options =>
                           //policy.AllowAnyOrigin();
                           policy.AllowAnyHeader();
                           policy.AllowAnyMethod();
-                          policy.WithOrigins(builder.Configuration["Cors:Origins"]);
+                          policy.WithOrigins(configuration["Cors:Origins"]);
                           policy.AllowCredentials();
                       });
 });
@@ -63,11 +56,22 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/hubs/chat").RequireAuthorization();
 
 app.MapGet("/", () => "Hello World!").AllowAnonymous();
-app.MapGet("/contacts/{userId}", GetContactsHandler.Handle).RequireAuthorization();
-app.MapPost("/avatar", AvatarHandler.Handle).RequireAuthorization();
-app.MapGet("/messages", GetMessagesHandler.Handle).RequireAuthorization();
-app.MapPost("/message", SendMessageHandler.Handle).RequireAuthorization();
-app.MapPost("/auth/register", RegisterHandler.Handle);
-app.MapPost("/auth/token", MKasperczyk.Chat.Api.Features.Auth.SecurityTokenHandler.Handle).AllowAnonymous();
+app.MapGet("/contacts/{userId}", (IUnitOfWork unitOfWork, int userId) 
+    => GetContactsHandler.Handle(unitOfWork, userId)).RequireAuthorization();
+
+app.MapPost("/avatar", (IUnitOfWork unitOfWork, HttpRequest request) 
+    => AvatarHandler.Handle(unitOfWork, request)).RequireAuthorization();
+
+app.MapGet("/messages", (IDbContextFactory<ChatContext> dbContextFactory, int senderId, int receiverId) 
+    => GetMessagesHandler.Handle(dbContextFactory, senderId, receiverId)).RequireAuthorization();
+
+app.MapPost("/message", (IUnitOfWork unitOfWork, IDbContextFactory<ChatContext> dbContextFactory, IValidator<SendMessageRequest> validator, SendMessageRequest model) 
+    => SendMessageHandler.Handle(unitOfWork, dbContextFactory, validator, model)).RequireAuthorization();
+
+app.MapPost("/auth/register", (IUnitOfWork unitOfWork, IValidator<RegisterRequest> validator, IAuthService authService, RegisterRequest registerInfo) 
+    => RegisterHandler.Handle(unitOfWork, validator, authService, registerInfo));
+
+app.MapPost("/auth/token", (IDbContextFactory<ChatContext> dbContextFactory, IAuthService authService, IValidator<SecurityTokenRequest> validator, SecurityTokenRequest tokenRequest) 
+    => SecurityTokenHandler.Handle(dbContextFactory, authService, validator, tokenRequest)).AllowAnonymous();
 
 app.Run(configuration["RunningAddress"]);

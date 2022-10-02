@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./ChatSendingBox.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function ChatSendingBox({ handleSendMessage, socket }) {
+export default function ChatSendingBox({ handleSendMessage }) {
   const [message, setMessage] = useState("");
 
   const sendMessage = () => {

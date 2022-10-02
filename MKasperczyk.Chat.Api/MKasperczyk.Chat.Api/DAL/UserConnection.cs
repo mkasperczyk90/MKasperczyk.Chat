@@ -9,7 +9,7 @@ namespace MKasperczyk.Chat.Api.DAL
         [Key]
         public string ConnectionID { get; set; }
         public int ConnectedUserId { get; set; }
-        public string UserAgent { get; set; }
+        public string? UserAgent { get; set; }
         public bool Connected { get; set; }
         public User ConnectedUser { get; set; }
         public DateTime ConnectionAt { get; set; }

@@ -1,14 +1,7 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.IdentityModel.Tokens;
 using MKasperczyk.Chat.Api.DAL;
 using MKasperczyk.Chat.Api.Services;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace MKasperczyk.Chat.Api.Features.Auth
 {
